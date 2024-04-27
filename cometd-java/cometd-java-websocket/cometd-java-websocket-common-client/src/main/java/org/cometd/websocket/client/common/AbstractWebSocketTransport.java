@@ -316,6 +316,7 @@ public abstract class AbstractWebSocketTransport extends HttpClientTransport imp
             }
 
             // Schedule a task to expire if the maxNetworkDelay elapses
+            final long maxDelay = maxNetworkDelay;
             final long expiration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime()) + maxNetworkDelay;
             ScheduledFuture<?> task = _scheduler.schedule(new Runnable() {
                 @Override
@@ -329,7 +330,7 @@ public abstract class AbstractWebSocketTransport extends HttpClientTransport imp
                         }
                         logger.debug("Expiring message {}", message);
                     }
-                    fail(new TimeoutException(), "Expired");
+                    fail(new TimeoutException("Network delay expired: " + maxDelay + " ms"), "Expired");
                 }
             }, maxNetworkDelay, TimeUnit.MILLISECONDS);
 
